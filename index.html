@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zero-shot Inexact CAD Model Alignment from a Single Image</title>
+  <link rel="icon" href="assets/images/icon_32x32.png" type="image/png" sizes="32x32">
+  <meta property="og:url" content="https://zerocad9d.github.io/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Zero-shot Inexact CAD Model Alignment from a Single Image" />
+  <meta property="og:description"
+    content="We present a simple yet effective technique to estimate lighting in a single input image. Our research uncovers a surprising relationship between the appearance of chrome balls and the initial diffusion noise map, which we utilize to consistently generate high-quality chrome balls. We further fine-tune an LDR diffusion model (Stable Diffusion XL) with LoRA, enabling it to perform exposure bracketing for HDR light estimation. Our method produces convincing light estimates across diverse settings and demonstrates superior generalization to in-the-wild scenarios." />
+  <meta property="og:image" content="https://diffusionlight.github.io/assets/images/in-the-wild/bed_ev-00_seed400.jpg" />
+  <meta name="description"
+    content="We present a simple yet effective technique to estimate lighting in a single input image. Our research uncovers a surprising relationship between the appearance of chrome balls and the initial diffusion noise map, which we utilize to consistently generate high-quality chrome balls. We further fine-tune an LDR diffusion model (Stable Diffusion XL) with LoRA, enabling it to perform exposure bracketing for HDR light estimation. Our method produces convincing light estimates across diverse settings and demonstrates superior generalization to in-the-wild scenarios." />
+  <meta name="keywords"
+    content="light estimation, diffusion model, relighting, chrome ball, inpainting, stable diffusion">
+  <meta name="google-site-verification" content="vKQD2CjY58aKxMAkgWU1kc7DUQqt2_GChgsbpaQXFJY" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+  <style>
+    body {
+      background-color: #F5F5F5;
+      margin: 0;
+    }
+
+    .btn-more-result {
+      margin-top: 1em;
+    }
+
+    @media only screen and (min-width: 681px) {
+      .vistec-offset {
+        top: -15px;
+      }
+    }
+
+    /* mobile ui */
+    @media screen and (max-width: 768px) {
+      .media-content {
+        overflow-x: inherit;
+      }
+
+      .column-lab-project {
+        padding: 0.3rem;
+      }
+
+      .no-overflow {
+        overflow: hidden;
+        max-width: 100vw;
+      }
+
+      .aff {
+        margin-top: 0px !important;
+        padding-top: 0px;
+        font-size: inherit !important;
+      }
+
+      .aff .column {
+        flex-basis: 0 !important;
+      }
+      .btn-more-result {
+        margin-top: 4em;
+      }
+
+    }
+
+    /* tablet ui */
+    @media screen and (max-width: 1024px) {
+      #teaser {
+        margin-top: 0px !important;
+      }
+
+      #abstract {
+        margin-top: 0px !important;
+      }
+
+      .columns-lab-project {
+        padding-left: 1em;
+        padding-right: 1em;
+      }
+
+      .columns-compare {
+        padding-left: 1em;
+        padding-right: 1em;
+      }
+
+      html,
+      body {
+        overflow-x: hidden;
+      }
+      .btn-more-result {
+        margin-top: 4em;
+      }
+    }
+
+    .splide__pagination__page.is-active {
+      background: #555555;
+    }
+
+    .splide__pagination {
+      bottom: -2em;
+    }
+
+    @media screen and (max-width:3000px) {
+      .is-hidden-on-3000 {
+        display: none !important
+      }
+    }
+
+    @media screen and (max-width:2000px) {
+      .is-hidden-on-2000 {
+        display: none !important
+      }
+    }
+
+    @media screen and (max-width: 350px) {
+      .column.is-12-ultrasmall {
+        width: 100%;
+      }
+
+      .column.has-left-text-ultrasmall {
+        text-align: left;
+      }
+    }
+
+    #in-the-wild-desktop .column figure {
+      margin-left: 0.2em;
+      margin-right: 0.2em;
+    }
+
+    .card {
+      height: 100%;
+      /* background-color: #f5f5f5 !important; */
+      border-radius: 0.5rem;
+      box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, .06), 0 0 0 1px rgba(10, 10, 10, .02);
+      /* box-shadow: none !important; */
+      color: #4a4a4a;
+      max-width: 100%;
+      position: relative;
+    }
+
+    .aff {
+      font-weight: bold;
+      font-size: 17px;
+      margin-top: 0.5rem;
+    }
+
+    .aff .column {
+      flex-basis: content;
+    }
+
+    .fixwidth {
+      max-width: 1000px !important;
+      margin: auto;
+    }
+
+
+    .author-list-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .author-list {
+      list-style-type: none;
+      padding: 0;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.1em;
+      flex-grow: 0px;
+      flex-shrink: 0px;
+    }
+
+    .author-list li {
+      margin-bottom: 0px;
+      padding: 0px 4px;
+    }
+
+    .linebreak {
+      flex-basis: 100%;
+      height: 0;
+    }
+
+    .author_names .column {
+      padding: 0px;
+    }
+
+    #teaser {
+      margin-top: 1em;
+    }
+
+    #abstract {
+      margin-top: 2em;
+      margin-bottom: 2em;
+    }
+
+    .video-wall video {
+      width: 100%;
+      height: 100%;
+      display: flex;
+    }
+
+    .fader_container img {
+      border: none;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      -webkit-transition: opacity 2s linear;
+      -moz-transition: opacity 2s linear;
+      -o-transition: opacity 2s linear;
+      transition: opacity 2s linear;
+    }
+
+    .showMe {
+      opacity: 1 !important;
+    }
+    
+    .gapless-video-frame .column{
+      display: flex;
+    }
+    .in-the-wild-result-pc .column figure{
+      margin: 0px;
+    }
+    .box-gray {
+      border: rgba(10,10,10,.1) solid 1px;
+      border-radius: 0px;
+    }
+    .splide__slide columns{
+      margin-left: 2em;
+      margin-right: 2em;
+    }
+    .splide__slide p {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+
+    }
+    .image.is-2_5by1 {
+  position: relative;
+  width: 100%;
+  padding-top: calc(100% / 2.5); /* 2.5:1 ratio = height = width / 2.5 */
+  overflow: hidden;
+}
+
+    .image.is-2_5by1 img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+    <section class="hero is-info is-bold no-overflow"
+        style="background-image:linear-gradient(141deg,#4a1295 0,#7f2e91 60%,#A0223A 100%)">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <h1 class="title"
+                    onclick="gtag('event', 'title_name', {'event_category' : 'link_click', 'event_label' : 'title_name'})">
+                    Zero-shot Inexact CAD Model Alignment from a Single Image</h1>
+
+                <div class="columns is-multiline is-mobile"
+                    onclick="gtag('event', 'title_box', {'event_category' : 'link_click', 'event_label' : 'title_box'})">
+                    <div class="column is-12">
+                        <div class="columns is-centered has-text-centered">
+                            <div class="column is-3"><a href="https://pattaramaneea.github.io">Pattaramanee Arsomngern</a><sup>1</sup></div>
+                            <div class="column is-3">Sasikarn Khwanmuang<sup>1</sup></div>
+                            <div class="column is-3"><a href="https://niessnerlab.org/index.html">Matthias Nießner</a><sup>2</sup></div>
+                            <div class="column is-3"><a href="https://www.supasorn.com/">Supasorn Suwajanakorn</a><sup>1</sup></div>
+                        </div>
+                    </div>
+                    <div class="column is-12">
+                        <div class="columns is-centered has-text-centered">
+                            <div class="column is-6"><sup>1</sup>VISTEC, Thailand</div>
+                            <div class="column is-6"><sup>2</sup>Technical University Munich</div>
+                        </div>
+          </div>
+          <div class="column is-12" style="margin-bottom:0px;padding-bottom: 0px;font-weight: 800; font-size: 22px; color: #ffafe6;">
+            ICCV 2025
+          </div>
+        </div>
+  </section>
+
+  <section class="no-overflow" id="teaser"
+    onclick="gtag('event', 'teaser', {'event_category' : 'link_click', 'event_label' : 'teaser'})">
+    <!--Desktop show 6 image-->
+    <!--Table show 6 image, 2 row with 3 image each -->
+    <div class="card container" style=" margin-left: auto; margin-right: auto;  ">
+        <img id="preview" style="display: none; position: absolute"></img>
+      <div class="columns is-mobile" style="margin: 0px;">
+
+        <div class="column" style="padding:0px;">
+          <figure class="image is-2_5by1">
+            <div class="fader_container">
+              <img class="showMe" src="assets/images/teaser.png">
+              <img src="assets/images/teaser2.png">
+            </div>
+          </figure>
+        </div>
+    </div>
+</div>
+</section>    
+
+  <section id="abstract"
+    onclick="gtag('event', 'abstract', {'event_category' : 'link_click', 'event_label' : 'abstract'})">
+    <div class="container">
+      <div class="card">
+        <div class="card-content">
+          <div class="media">
+            <div class="media-content">
+              <p class="title is-3">Abstract</p>
+            </div>
+          </div>
+
+          <div class="content is-size-6-desktop">
+            One practical approach to infer 3D scene structure from a single image is to retrieve 
+            a closely matching 3D model from a database and align it with the object in the image. 
+            Existing methods rely on supervised training with images and pose annotations, which 
+            limits them to a narrow set of object categories. To address this, we propose a weakly 
+            supervised 9-DoF alignment method for inexact 3D models that requires no pose annotations 
+            and generalizes to unseen categories. Our approach derives a novel feature space based on 
+            foundation features that ensure multi-view consistency and overcome symmetry ambiguities 
+            inherent in foundation features using a self-supervised triplet loss.
+            Additionally, we introduce a texture-invariant pose refinement technique that performs 
+            dense alignment in normalized object coordinates, estimated through the enhanced feature space.
+            We conduct extensive evaluations on the real-world ScanNet25k dataset, where our method 
+            outperforms SOTA weakly supervised baselines by +4.3% mean alignment accuracy and is 
+            the only weakly supervised approach to surpass the supervised ROCA by +2.7%.
+            To assess generalization, we introduce SUN2CAD, a real-world test set with 20 novel 
+            object categories, where our method achieves SOTA results without prior training on them.
+                      </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="no-overflow" style="margin-top:2em; margin-bottom:2em;">
+    <div class="container has-text-centered">
+        <div class="columns is-mobile is-multiline">
+            <div class="column is-6-mobile">
+                <a href="https://arxiv.org/abs/2312.09168" target="_blank"
+                    onclick="gtag('event', 'download_paper', {'event_category' : 'link_click', 'event_label' : 'arxiv'})">
+                    <div>
+                        <img src="assets/images/logo/paper.png" style="width: 70px; height: 100px;">
+                    </div>
+                    Paper
+                </a>
+            </div>
+            <div class="column is-6-mobile">
+                <a href="https://zerocad9d.github.io" target="_blank"
+                    onclick="gtag('event', 'download_video', {'event_category' : 'link_click', 'event_label' : 'video'})">
+                    <div>
+                        <img src="assets/images/logo/video.png" style="width: 100px; height: 100px;">
+                    </div>
+                    Video (Coming soon)
+                </a>
+            </div>
+            <div class="column is-6-mobile">
+                <a href="https://zerocad9d.github.io" target="_blank"
+                    onclick="gtag('event', 'download_code', {'event_category' : 'link_click', 'event_label' : 'code'})">
+                    <div>
+                        <img src="assets/images/logo/coding.png" style="width: 100px; height: 100px;">
+                    </div>
+                    Code (Coming soon)
+                </a>
+            </div>
+    </div>
+</section>
+ 
+<section style="margin-top: 2em; margin-bottom:2em;">
+    <div class="container">
+      <div class="card" style="">
+        <div class="card-content">
+          <div class="media">
+            <div class="media-content">
+              <p class="title is-3">Proposed Solution</p>
+            </div>
+          </div>
+
+          <div class="content">
+            We introduce a technique to enhance foundation features and integrate them into a novel 3D alignment pipeline with a coarse-to-fine estimation scheme: The first step estimates a coarse 9-DoF pose by utilizing a new geometry-aware feature space, derived from DINOv2 features, that is more robust to object part symmetries. The second step refines the pose through dense alignment optimization in a texture-invariant space called the Normalized Object Coordinate (NOC), for which we also propose a new NOC estimator that generalizes better than prior works.
+            <img src="assets/images/pipeline.png" style="width: 100%; height: auto; margin: 2em 0;">
+            </div>
+            <div class="content">
+                In coarse alignment, object pixels and 3D model parts are encoded into a shared feature space, where correspondences are found via nearest neighbors and used to estimate pose with least squares. 
+                The key challenge is designing an effective feature space and encoder. Our solution trains a small feature adapter network that converts foundation features, computed from an image or a 3D model rendering, into custom features. This network enforces multi-view consistency, ensuring features for the same part remain similar across views, while distinguishing features for symmetrical parts that are not well separated in the foundation feature space. Leveraging direct access to CAD models, we formulate these objectives into a self-supervised triplet loss.
+                This new feature space improves geometric awareness while allowing useful semantics in the foundation features to be retained.    
+            </div>
+            <div class="content">
+                In fine alignment, we use dense image-based alignment to optimize the 3D pose by matching the 3D model's rendering to the input image. However, instead of comparing in RGB space, which is impractical due to mismatched texture, we convert both the input and the rendering into NOC maps for comparison. 
+                These maps assign pixels from the same object part to a shared normalized 3D coordinate, allowing direct matching.
+                To predict NOC maps, we leverage our feature space and perform nearest neighbor matching, as in coarse alignment. 
+                Since nearest neighbor matching is invariant to global scaling and shifting in the feature space, our NOC maps can offer improved robustness to domain gaps and have been found to generalize better to real-world images, even outperforming direct NOC regressors trained on the same synthetic renderings.
+    
+            </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="hero" style="padding-top:0px;">
+    <div class="container" style="width: 100%;">
+      <div class="card">
+        <header class="card-header">
+          <p class="card-header-title">
+            BibTex
+          </p>
+          <a class="card-header-icon button-clipboard" style="border:0px; background: inherit;"
+            data-clipboard-target="#bibtex-info"
+            onclick="gtag('event', 'bibtex', {'event_category' : 'link_click', 'event_label' : 'copy_btn'})">
+            <div class="button-clipboard-tooltip" style="display: none;">Copied!</div>
+            <span class="icon">
+              <img src="assets/images/logo/copy.svg" style="height: 20px;" />
+            </span>
+          </a>
+        </header>
+        <div class="card-content" style="max-width: calc(100vw - 3rem);">
+          <pre onclick="gtag('event', 'bibtex', {'event_category' : 'link_click', 'event_label' : 'main_body'})"
+            style="background-color:inherit;padding: 0px;" id="bibtex-info">@inproceedings{Arsomngern2025ZeroCAD,
+  author = {Arsomngern, Pattaramanee and Khwanmuang, Sasikarn and Nie{\ss}ner, Matthias and Suwajanakorn, Supasorn},
+  title = {Zero-shot Inexact CAD Model Alignment from a Single Image},
+  booktitle = {International Conference on Computer Vision},
+  year = {2025},
+}</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- <section style="background-color: #555555; padding-bottom:1.5em;">
+    <div class="container" style="margin-top:2em; padding-top:1em;">
+      <div style="border-bottom:1px solid lightgrey; padding-bottom:1em; margin-bottom:1em;">
+        <p class="title is-3" style="color:white; padding-left:0.5em">From our lab</p>
+      </div>
+      <div class="container">
+        <div class="columns is-desktop columns-lab-project">
+          <div class="column column-lab-project">
+            <a href="https://diffusion-face-relighting.github.io/" target="_blank"
+              onclick="gtag('event', 'difareli', {'event_category' : 'link_click', 'event_label' : 'difareli'})">
+              <div class="card card-lab-project">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    DiFaReli: Diffusion Face Relighting
+                  </p>
+                  <p class="card-header-icon" style="min-width: 150px;">
+                    ICCV 2023
+                  </p>
+                </header>
+                <div class="card-content">
+                  <div class="content">
+                    <img src="assets/images/front-page/face-relight.jpg">
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="column column-lab-project">
+            <a href="https://zero-guide-seg.github.io/" target="_blank"
+              onclick="gtag('event', 'zero_guidance', {'event_category' : 'link_click', 'event_label' : 'zero_guidance'})">
+              <div class="card card-lab-project">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    Zero-guidance Segmentation Using Zero Segment Labels
+                  </p>
+                  <p class="card-header-icon" style="min-width: 150px;">
+                    ICCV 2023
+                  </p>
+                </header>
+                <div class="card-content">
+                  <div class="content">
+                    <img src="assets/images/front-page/zero-guide-seg.jpg">
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="columns is-desktop columns-lab-project">
+          <div class="column column-lab-project">
+            <a href="https://geoaware2drepusingcad.github.io/" target="_blank"
+              onclick="gtag('event', 'geoaware2d', {'event_category' : 'link_click', 'event_label' : 'geoaware2d'})">
+              <div class="card card-lab-project">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    Learning Geometric-aware Properties in 2D Representation Using Lightweight CAD Models, or Zero Real
+                    3D Pairs
+                  </p>
+                  <p class="card-header-icon" style="min-width: 150px;">
+                    CVPR 2023
+                  </p>
+                </header>
+                <div class="card-content">
+                  <div class="content">
+                    <img src="assets/images/front-page/geo-aware.jpg">
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="column column-lab-project">
+            <a href="https://stylegan-salon.github.io/" target="_blank"
+              onclick="gtag('event', 'stylegan_salon', {'event_category' : 'link_click', 'event_label' : 'stylegan_salon'})">
+              <div class="card card-lab-project">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    StyleGAN Salon: Multi-View Latent Optimization for Pose-Invariant Hairstyle Transfer
+                  </p>
+                  <p class="card-header-icon" style="min-width: 150px;">
+                    CVPR 2023
+                  </p>
+                </header>
+                <div class="card-content">
+                  <div class="content">
+                    <img src="assets/images/front-page/stylegansalon.jpg">
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section> -->
+
+  <section class="hero" style="background-color: white; padding-bottom:1em; padding-top:1em">
+    <div style="margin: 0px; margin-top: 5px;">
+      <div class="container" style="text-align: center; vertica">
+        <a href="https://vistec.ist/vision" target="_blank"><img src="assets/images/logo/vision.png"
+            style="width: 130px; display: inline; margin: 0 100px;"
+            onclick="gtag('event', 'vll_logo', {'event_category' : 'link_click', 'event_label' : 'vll_logo'})"></a>
+        <a href="https://vistec.ac.th/" target="_blank"><img src="assets/images/logo/vistec_color.svg"
+            class="vistec-offset" style="width: 130px; display: inline; margin: 0 100px; position:relative; "
+            onclick="gtag('event', 'vistec_logo', {'event_category' : 'link_click', 'event_label' : 'vistec_logo'})"></a>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+  <script>
+    var splide = new Splide('.splide', {
+      type: 'loop',
+      perPage: 3,
+      autoplay: true,
+      breakpoints: {
+        1024: {
+          perPage: 2,
+        },
+        640: {
+          perPage: 1,
+        },
+      }
+    });
+
+    splide.mount();
+  </script>
+  <!-- Copy Bibtex -->
+  <script src="assets/scripts/clipboard.min.js"></script>
+  <script>
+    var clipboard = new ClipboardJS('.button-clipboard');
+    function setTooltip() {
+      var tooltip = document.querySelector('.button-clipboard-tooltip');
+      tooltip.style.display = 'block';
+    }
+    function hideTooltip() {
+      var tooltip = document.querySelector('.button-clipboard-tooltip');
+      tooltip.style.display = 'none';
+    }
+    clipboard.on('success', function (e) {
+      setTooltip(e.trigger, 'Copied!');
+      setTimeout(function () {
+        hideTooltip(e.trigger);
+      }, 2000);
+
+    });
+  </script>
+  <!-- Random fade teaser -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function () {
+
+      let numImages = $(".fader_container").length;
+      setTimeout(nextImage, 7000, 0);
+
+      function nextImage(fid) {
+        var fader = $(".fader_container").eq(fid);
+        var active = fader.children("img.showMe");
+        var next = active.next().length ? active.next() : fader.children("img").first();
+        active.removeClass("showMe");
+        next.addClass("showMe");
+        if (fid == numImages - 1) {
+          setTimeout(nextImage, 7000, 0);
+        } else {
+          setTimeout(nextImage, 3000, (fid + 1) % numImages);
+        }
+      }
+
+      $(".average_videos video, .video_app").mouseover(function (event) {
+        $(this).get(0).pause();
+      });
+      $(".average_videos video, .video_app").mouseout(function (event) {
+        $(this).get(0).play();
+      });
+
+      /*
+      $(".fader_container").mouseover(function (event) {
+        var src = $(this).children(".showMe").attr("src");
+        var newsrc = src;
+        $("#preview").attr("src", newsrc);
+        $("#preview").show();
+        // move preview to the same location as this
+        $("#preview").offset({
+          top: $(this).offset().top,
+          left: $(this).offset().left
+        });
+        // move preview to front most
+        $("#preview").css("z-index", 1000);
+      });
+      $(".fader_container").mouseout(function (event) {
+        $("#preview").hide();
+      });
+      */
+
+    });
+
+  </script>
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9BBTLD1V4J"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-9BBTLD1V4J');
+  </script>
+
+</body>
+
+</html>
