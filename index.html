@@ -254,6 +254,17 @@
     height: 100%;
     object-fit: cover;
     }
+    .content_thinbox {
+      margin-top: 1em;
+      margin-bottom: 1em;
+      width: 100%;
+      margin-left: auto; /* Centering */
+      margin-right: auto; /* Centering */
+    }
+    .content_nospace{
+      margin-top:0em;
+      margin-bottom:0em;
+    }
   </style>
 </head>
 <body>
@@ -345,7 +356,7 @@ onclick="gtag('event', 'abstract', {'event_category' : 'link_click', 'event_labe
       <div class="columns is-mobile is-multiline">
         <!-- <div class="column is-hidden-mobile	is-hidden-tablet-only is-hidden-desktop-only"></div> -->
         <div class="column is-6-mobile">
-                <a href="https://zerocad9d.github.io" target="_blank"
+                <a href="https://zerocad9d.github.io/#" target="_blank"
                     onclick="gtag('event', 'download_paper', {'event_category' : 'link_click', 'event_label' : 'arxiv'})">
                     <div>
                         <img src="assets/images/logo/paper.png" style="width: 70px; height: 100px;">
@@ -354,7 +365,7 @@ onclick="gtag('event', 'abstract', {'event_category' : 'link_click', 'event_labe
                 </a>
             </div>
             <div class="column is-6-mobile">
-                <a href="https://zerocad9d.github.io" target="_blank"
+                <a href="https://zerocad9d.github.io/#" target="_blank"
                     onclick="gtag('event', 'download_video', {'event_category' : 'link_click', 'event_label' : 'video'})">
                     <div>
                         <img src="assets/images/logo/video.png" style="width: 100px; height: 100px;">
@@ -363,7 +374,7 @@ onclick="gtag('event', 'abstract', {'event_category' : 'link_click', 'event_labe
                 </a>
             </div>
             <div class="column is-6-mobile">
-                <a href="https://zerocad9d.github.io" target="_blank"
+                <a href="https://zerocad9d.github.io/#" target="_blank"
                     onclick="gtag('event', 'download_code', {'event_category' : 'link_click', 'event_label' : 'code'})">
                     <div>
                         <img src="assets/images/logo/coding.png" style="width: 100px; height: 100px;">
@@ -385,17 +396,22 @@ onclick="gtag('event', 'abstract', {'event_category' : 'link_click', 'event_labe
             </div>
           </div>
 
-          <div class="content">
-            We introduce a technique to enhance foundation features and integrate them into a novel 3D alignment pipeline with a coarse-to-fine estimation scheme: The first step estimates a coarse 9-DoF pose by utilizing a new geometry-aware feature space, derived from DINOv2 features, that is more robust to object part symmetries. The second step refines the pose through dense alignment optimization in a texture-invariant space called the Normalized Object Coordinate (NOC), for which we also propose a new NOC estimator that generalizes better than prior works.
+          <div class="content_thinbox">
+            We introduce a technique to <b>enhance foundation features</b> and integrate them into a novel 3D alignment pipeline with a <b>coarse-to-fine estimation</b> scheme: 
+            The first step estimates a coarse 9-DoF pose by utilizing a new geometry-aware feature space, derived from DINOv2 features, 
+            that is more robust to object part symmetries. The second step refines the pose through <b>dense alignment optimization</b> in a texture-invariant space 
+            called the Normalized Object Coordinate (NOC), for which we also propose a new NOC estimator that generalizes better than prior works.
+          </div>
+          <div class="content_nospace">
             <img src="assets/images/pipeline.png" style="width: 100%; height: auto; margin: 2em 0;">
             </div>
-            <div class="content">
-                In coarse alignment, object pixels and 3D model parts are encoded into a shared feature space, where correspondences are found via nearest neighbors and used to estimate pose with least squares. 
+            <div class="content_thinbox">
+                In <b>coarse alignment</b>, object pixels and 3D model parts are encoded into a shared feature space, where correspondences are found via nearest neighbors and used to estimate pose with least squares. 
                 The key challenge is designing an effective feature space and encoder. Our solution trains a small feature adapter network that converts foundation features, computed from an image or a 3D model rendering, into custom features. This network enforces multi-view consistency, ensuring features for the same part remain similar across views, while distinguishing features for symmetrical parts that are not well separated in the foundation feature space. Leveraging direct access to CAD models, we formulate these objectives into a self-supervised triplet loss.
                 This new feature space improves geometric awareness while allowing useful semantics in the foundation features to be retained.    
             </div>
-            <div class="content">
-                In fine alignment, we use dense image-based alignment to optimize the 3D pose by matching the 3D model's rendering to the input image. However, instead of comparing in RGB space, which is impractical due to mismatched texture, we convert both the input and the rendering into NOC maps for comparison. 
+            <div class="content_thinbox">
+                In <b>fine alignment</b>, we use dense image-based alignment to optimize the 3D pose by matching the 3D model's rendering to the input image. However, instead of comparing in RGB space, which is impractical due to mismatched texture, we convert both the input and the rendering into NOC maps for comparison. 
                 These maps assign pixels from the same object part to a shared normalized 3D coordinate, allowing direct matching.
                 To predict NOC maps, we leverage our feature space and perform nearest neighbor matching, as in coarse alignment. 
                 Since nearest neighbor matching is invariant to global scaling and shifting in the feature space, our NOC maps can offer improved robustness to domain gaps and have been found to generalize better to real-world images, even outperforming direct NOC regressors trained on the same synthetic renderings.
