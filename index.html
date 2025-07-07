@@ -266,6 +266,7 @@
   </style>
 </head>
 <body>
+
     <section class="hero is-info is-bold no-overflow"
         style="background-image:linear-gradient(141deg,#4a1295 0,#7f2e91 60%,#A0223A 100%)">
         <div class="hero-body">
@@ -295,7 +296,40 @@
           </div>
         </div>
   </section>
-
+  <section class="no-overflow" style="margin-top:2em; margin-bottom:2em;">
+    <div class="container has-text-centered">
+      <div class="columns is-mobile is-multiline">
+        <!-- <div class="column is-hidden-mobile	is-hidden-tablet-only is-hidden-desktop-only"></div> -->
+        <div class="column is-6-mobile">
+                <a href="https://zerocad9d.github.io/#" target="_blank"
+                    onclick="gtag('event', 'download_paper', {'event_category' : 'link_click', 'event_label' : 'arxiv'})">
+                    <div>
+                        <img src="assets/images/logo/paper.png" style="width: 70px; height: 100px;">
+                    </div>
+                    Paper
+                </a>
+            </div>
+            <div class="column is-6-mobile">
+                <a href="https://zerocad9d.github.io/#" target="_blank"
+                    onclick="gtag('event', 'download_video', {'event_category' : 'link_click', 'event_label' : 'video'})">
+                    <div>
+                        <img src="assets/images/logo/video.png" style="width: 100px; height: 100px;">
+                    </div>
+                    Video (Coming soon)
+                </a>
+            </div>
+            <div class="column is-6-mobile">
+                <a href="https://zerocad9d.github.io/#" target="_blank"
+                    onclick="gtag('event', 'download_code', {'event_category' : 'link_click', 'event_label' : 'code'})">
+                    <div>
+                        <img src="assets/images/logo/coding.png" style="width: 100px; height: 100px;">
+                    </div>
+                    Code (Coming soon)
+                </a>
+                <!-- <div class="column is-hidden-mobile	is-hidden-tablet-only is-hidden-desktop-only"></div> -->
+              </div>
+            </div>
+          </section>
 <!-- <section class="no-overflow" id="teaser"
     onclick="gtag('event', 'teaser', {'event_category' : 'link_click', 'event_label' : 'teaser'})">
     <div class="card container" style=" margin-left: auto; margin-right: auto;  ">
@@ -322,11 +356,8 @@
           </div>
         </div>
         <img src="assets/images/teaser.png" style="width: 100%; height: auto;">
-        We estimate the 9-DoF pose of an inexact CAD model to align it with a target object's pose in a 2D image <b>without training on scene-level pose annotations</b>.
-        Our approach can <b>generalize to unseen classes in real images</b> even though it was trained on just 9 classes.
-        <img src="assets/images/teaser2.png" style="width: 100%; height: auto; margin: 1em 0;">
-        We evaluate our method on <b>ScanNet</b> and outperform weakly supervised baselines. Additionally, we introduce <b>SUN2CAD</b>, an inexact 9-DoF test set with <b>20 unseen categories</b>, where our approach surpasses both the supervised SOTA (SPARC) and weakly supervised baselines, achieving state-of-the-art generalization by a large margin.
-      </div>
+        Given an input image and user-selected CAD models, we estimate the <b>9-DoF pose</b> of each model by aligning it to the target object using the Normalized Object Coordinate (NOC) space, <b>without requiring scene-level pose annotations</b>. 
+        Despite being trained on only 9 classes, our method <b>generalizes well</b> to <b>unseen categories</b> in real images.</div>
       </div>
     </div>
   </div>
@@ -366,40 +397,7 @@ onclick="gtag('event', 'abstract', {'event_category' : 'link_click', 'event_labe
     </div>
   </section>
 
-  <section class="no-overflow" style="margin-top:2em; margin-bottom:2em;">
-    <div class="container has-text-centered">
-      <div class="columns is-mobile is-multiline">
-        <!-- <div class="column is-hidden-mobile	is-hidden-tablet-only is-hidden-desktop-only"></div> -->
-        <div class="column is-6-mobile">
-                <a href="https://zerocad9d.github.io/#" target="_blank"
-                    onclick="gtag('event', 'download_paper', {'event_category' : 'link_click', 'event_label' : 'arxiv'})">
-                    <div>
-                        <img src="assets/images/logo/paper.png" style="width: 70px; height: 100px;">
-                    </div>
-                    Paper
-                </a>
-            </div>
-            <div class="column is-6-mobile">
-                <a href="https://zerocad9d.github.io/#" target="_blank"
-                    onclick="gtag('event', 'download_video', {'event_category' : 'link_click', 'event_label' : 'video'})">
-                    <div>
-                        <img src="assets/images/logo/video.png" style="width: 100px; height: 100px;">
-                    </div>
-                    Video (Coming soon)
-                </a>
-            </div>
-            <div class="column is-6-mobile">
-                <a href="https://zerocad9d.github.io/#" target="_blank"
-                    onclick="gtag('event', 'download_code', {'event_category' : 'link_click', 'event_label' : 'code'})">
-                    <div>
-                        <img src="assets/images/logo/coding.png" style="width: 100px; height: 100px;">
-                    </div>
-                    Code (Coming soon)
-                </a>
-                <!-- <div class="column is-hidden-mobile	is-hidden-tablet-only is-hidden-desktop-only"></div> -->
-              </div>
-            </div>
-          </section>
+
 <section style="margin-top: 2em; margin-bottom:2em;">
     <div class="container">
       <div class="card" style="">
@@ -453,6 +451,26 @@ onclick="gtag('event', 'abstract', {'event_category' : 'link_click', 'event_labe
         </div>
       </div>
     </section>
+    <section style="margin-top: 2em; margin-bottom:2em;">
+      <div class="container">
+        <div class="card" style="">
+          <div class="card-content">
+            <div class="media">
+              <div class="media-content">
+                <p class="title is-3">Alignmet Results</p>
+              </div>
+            </div>
+            <img src="assets/images/teaser2.png" style="width: 100%; height: auto;">
+            We evaluate our method on <b>ScanNet</b> and outperform weakly supervised baselines. Additionally, we introduce <b>SUN2CAD dataset</b>, an inexact 9-DoF test set with <b>20 unseen categories</b>, 
+            where our approach surpasses both the supervised SOTA (SPARC) and weakly supervised baselines, achieving state-of-the-art generalization by a large margin.
+                <!-- </div> -->
+  
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
 <!-- <section id="solution"
 onclick="gtag('event', 'abstract', {'event_category' : 'link_click', 'event_label' : 'abstract'})">
 <div class="container fixwidth">
@@ -756,13 +774,13 @@ onclick="gtag('event', 'abstract', {'event_category' : 'link_click', 'event_labe
   </script>
   
   <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9BBTLD1V4J"></script>
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-9BBTLD1V4J"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() {dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-9BBTLD1V4J');
-  </script>
+  </script> -->
 
 </body>
 
