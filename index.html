@@ -255,12 +255,10 @@
     object-fit: cover;
     }
     .content_thinbox {
-      margin-top: 1em;
-      margin-bottom: 1em;
-      width: 100%;
-      margin-left: auto; /* Centering */
-      margin-right: auto; /* Centering */
-    }
+  max-width: 1000px;
+  margin: 0 auto 2em auto; /* center + spacing */
+  /* line-height: 1.75; */
+}
     .content_nospace{
       margin-top:0em;
       margin-bottom:0em;
@@ -298,10 +296,8 @@
         </div>
   </section>
 
-  <section class="no-overflow" id="teaser"
+<!-- <section class="no-overflow" id="teaser"
     onclick="gtag('event', 'teaser', {'event_category' : 'link_click', 'event_label' : 'teaser'})">
-    <!--Desktop show 6 image-->
-    <!--Table show 6 image, 2 row with 3 image each -->
     <div class="card container" style=" margin-left: auto; margin-right: auto;  ">
         <img id="preview" style="display: none; position: absolute"></img>
       <div class="columns is-mobile" style="margin: 0px;">
@@ -316,7 +312,26 @@
         </div>
     </div>
 </div>
-</section>    
+</section>     -->
+<section style="margin-top: 2em; margin-bottom:2em;">
+  <div class="container">
+    <div class="card" style="">
+      <div class="card-content">
+        <div class="media">
+          <div class="media-content">
+          </div>
+        </div>
+        <img src="assets/images/teaser.png" style="width: 100%; height: auto;">
+        We estimate the 9-DoF pose of an inexact CAD model to align it with a target object's pose in a 2D image <b>without training on scene-level pose annotations</b>.
+        Our approach can <b>generalize to unseen classes in real images</b> even though it was trained on just 9 classes.
+        <img src="assets/images/teaser2.png" style="width: 100%; height: auto; margin: 1em 0;">
+        We evaluate our method on <b>ScanNet</b> and outperform weakly supervised baselines. Additionally, we introduce <b>SUN2CAD</b>, an inexact 9-DoF test set with <b>20 unseen categories</b>, where our approach surpasses both the supervised SOTA (SPARC) and weakly supervised baselines, achieving state-of-the-art generalization by a large margin.
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
 
 <section id="abstract"
 onclick="gtag('event', 'abstract', {'event_category' : 'link_click', 'event_label' : 'abstract'})">
@@ -385,8 +400,82 @@ onclick="gtag('event', 'abstract', {'event_category' : 'link_click', 'event_labe
               </div>
             </div>
           </section>
-         
 <section style="margin-top: 2em; margin-bottom:2em;">
+    <div class="container">
+      <div class="card" style="">
+        <div class="card-content">
+          <div class="media">
+            <div class="media-content">
+              <p class="title is-3">Proposed Solution</p>
+            </div>
+          </div>
+          <img src="assets/images/pipeline.png" style="width: 100%; height: auto; margin: 1em 0;">
+          <!-- <div class="content_thinbox"> -->
+            We propose a technique to <b>enhance foundation features</b> and integrate them into a 3D alignment pipeline with a <b>coarse-to-fine estimation</b> scheme. 
+            (1) A coarse 9-DoF pose is estimated using a geometry-aware feature space derived from DINOv2, which is more robust to object symmetries.
+            (2) The pose is refined through <b>dense alignment optimization</b> in a texture-invariant space (NOC), using a new NOC estimator that generalizes better than prior work.
+          <!-- </div> -->
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="coarse"
+onclick="gtag('event', 'abstract', {'event_category' : 'link_click', 'event_label' : 'abstract'})">
+<div class="container fixwidth">
+  <div class="card">
+    <div class="card-content">
+      <div class="media">
+        <div class="media-content">
+          <p class="title is-4">Coarse Pose Estimation</p>
+        </div>
+      </div>
+
+          <div class="content is-size-6-desktop">
+            In coarse alignment, object pixels and 3D model parts are encoded into a shared feature space, where correspondences are found via nearest neighbors and used to estimate pose with least squares. 
+            The key challenge is designing an effective feature space and encoder. Our solution trains a small feature adapter network that converts foundation features, computed from an image or a 3D model rendering, into custom features. This network enforces multi-view consistency, ensuring features for the same part remain similar across views, while distinguishing features for symmetrical parts that are not well separated in the foundation feature space. Leveraging direct access to CAD models, we formulate these objectives into a self-supervised triplet loss.
+            This new feature space improves geometric awareness while allowing useful semantics in the foundation features to be retained.    
+
+          </div>
+
+            <p class="title is-4">Fine Pose Estimation</p>
+  
+            <div class="content is-size-6-desktop">
+              In fine alignment, we use dense image-based alignment to optimize the 3D pose by matching the 3D model's rendering to the input image. However, instead of comparing in RGB space, which is impractical due to mismatched texture, we convert both the input and the rendering into NOC maps for comparison. 
+              These maps assign pixels from the same object part to a shared normalized 3D coordinate, allowing direct matching.
+              To predict NOC maps, we leverage our feature space and perform nearest neighbor matching, as in coarse alignment. 
+              Since nearest neighbor matching is invariant to global scaling and shifting in the feature space, our NOC maps can offer improved robustness to domain gaps and have been found to generalize better to real-world images, even outperforming direct NOC regressors trained on the same synthetic renderings.
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+<!-- <section id="solution"
+onclick="gtag('event', 'abstract', {'event_category' : 'link_click', 'event_label' : 'abstract'})">
+<div class="container fixwidth">
+  <div class="card">
+    <div class="card-content">
+      <div class="media">
+        <div class="media-content">
+          <p class="title is-3">Proposed Solution</p>
+        </div>
+      </div>
+
+          <div class="content is-size-6-desktop">
+            We introduce a technique to <b>enhance foundation features</b> and integrate them into a novel 3D alignment pipeline with a <b>coarse-to-fine estimation</b> scheme: 
+            The first step estimates a coarse 9-DoF pose by utilizing a new geometry-aware feature space, derived from DINOv2 features, 
+            that is more robust to object part symmetries. The second step refines the pose through <b>dense alignment optimization</b> in a texture-invariant space 
+            called the Normalized Object Coordinate (NOC), for which we also propose a new NOC estimator that generalizes better than prior works.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section> -->
+
+<!-- <section style="margin-top: 2em; margin-bottom:2em;">
     <div class="container">
       <div class="card" style="">
         <div class="card-content">
@@ -420,7 +509,8 @@ onclick="gtag('event', 'abstract', {'event_category' : 'link_click', 'event_labe
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
+
   <section style="margin-top: 2em; margin-bottom:2em;">
     <div class="container">
       <div class="card" style="">
