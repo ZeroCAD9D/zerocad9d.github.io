@@ -10,12 +10,12 @@
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Zero-shot Inexact CAD Model Alignment from a Single Image" />
   <meta property="og:description"
-    content="We present a simple yet effective technique to estimate lighting in a single input image. Our research uncovers a surprising relationship between the appearance of chrome balls and the initial diffusion noise map, which we utilize to consistently generate high-quality chrome balls. We further fine-tune an LDR diffusion model (Stable Diffusion XL) with LoRA, enabling it to perform exposure bracketing for HDR light estimation. Our method produces convincing light estimates across diverse settings and demonstrates superior generalization to in-the-wild scenarios." />
-  <meta property="og:image" content="https://diffusionlight.github.io/assets/images/in-the-wild/bed_ev-00_seed400.jpg" />
+    content="Given an input image and user-selected CAD models, we estimate the 9-DoF pose of each model by aligning it to the target object using the Normalized Object Coordinate (NOC) space, without requiring scene-level pose annotations. Despite being trained on only 9 classes, our method generalizes well to unseen categories in real images." />
+  <!-- <meta property="og:image" content="https://diffusionlight.github.io/assets/images/in-the-wild/bed_ev-00_seed400.jpg" /> -->
   <meta name="description"
-    content="We present a simple yet effective technique to estimate lighting in a single input image. Our research uncovers a surprising relationship between the appearance of chrome balls and the initial diffusion noise map, which we utilize to consistently generate high-quality chrome balls. We further fine-tune an LDR diffusion model (Stable Diffusion XL) with LoRA, enabling it to perform exposure bracketing for HDR light estimation. Our method produces convincing light estimates across diverse settings and demonstrates superior generalization to in-the-wild scenarios." />
+    content="Given an input image and user-selected CAD models, we estimate the 9-DoF pose of each model by aligning it to the target object using the Normalized Object Coordinate (NOC) space, without requiring scene-level pose annotations. Despite being trained on only 9 classes, our method generalizes well to unseen categories in real images." />
   <meta name="keywords"
-    content="light estimation, diffusion model, relighting, chrome ball, inpainting, stable diffusion">
+    content="cad alignment, 3D scene reconstruction, zero shot pose estimation, 9 dof">
   <meta name="google-site-verification" content="vKQD2CjY58aKxMAkgWU1kc7DUQqt2_GChgsbpaQXFJY" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
